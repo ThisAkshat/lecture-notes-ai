@@ -4,8 +4,10 @@ static/uploads/*
 *.wav
 *.mp3
 *.m4a
+*.mp4
 *.pth
 *.bin
 *.safetensors
 *.model
 *.json
+*.checkpoint
