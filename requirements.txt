@@ -1,7 +1,7 @@
 ﻿Flask==2.3.3
 whisper-timestamped==1.14.2
-torch==2.1.0
-transformers==4.36.0
+torch==2.9.1
+transformers==4.40.0
 sentencepiece==0.2.0
 protobuf==4.25.1
 gunicorn==21.2.0
