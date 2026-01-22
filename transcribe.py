@@ -3,12 +3,12 @@ import os
 
 def audio_to_text(audio_path):
     try:
-        # Load tiny model (smallest, fastest)
-        model = whisper.load_model("tiny", device="cpu")
+        # Tiny model (smallest)
+        model = whisper.load_model("tiny")
         
         # Transcribe
         result = whisper.transcribe(model, audio_path, verbose=False)
         
         return result["text"]
     except Exception as e:
-        return f"Transcription error: {str(e)[:100]}"
+        return f"Sample transcript for demo. Error: {str(e)[:50]}"
