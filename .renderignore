@@ -1,0 +1,11 @@
+﻿venv/
+__pycache__/
+static/uploads/*
+*.wav
+*.mp3
+*.m4a
+*.pth
+*.bin
+*.safetensors
+*.model
+*.json

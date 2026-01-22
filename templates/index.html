@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LectureNotes AI | Ocean Blue</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ocean-deep: #1a2980;
+            --ocean-blue: #26d0ce;
+            --ocean-light: #6dd5ed;
+            --ocean-white: #f0f8ff;
+            --ocean-teal: #00b4db;
+            --ocean-dark: #0f3460;
+            --accent-gold: #ffd700;
+            --accent-coral: #ff7e5f;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--ocean-dark) 0%, var(--ocean-deep) 30%, var(--ocean-blue) 100%);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(38, 208, 206, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(109, 213, 237, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(26, 41, 128, 0.3) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        .wave-bg {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 200px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%2300b4db" fill-opacity="0.3" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+            background-size: cover;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Modern Header */
+        .ocean-header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 30px 40px;
+            margin-bottom: 40px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.3),
+                0 0 30px rgba(38, 208, 206, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ocean-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(to right, var(--ocean-blue), var(--accent-gold), var(--ocean-teal));
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .ai-icon {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, var(--ocean-blue), var(--ocean-teal));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                0 10px 30px rgba(38, 208, 206, 0.5),
+                inset 0 2px 4px rgba(255, 255, 255, 0.8);
+            animation: pulse 3s ease-in-out infinite;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .ai-icon i {
+            font-size: 40px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-text h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 3.2rem;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--ocean-light), var(--accent-gold), var(--ocean-white));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .header-text .tagline {
+            font-size: 1.3rem;
+            color: var(--ocean-white);
+            opacity: 0.9;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Main Card */
+        .main-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 40px;
+            margin-bottom: 40px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .main-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.2rem;
+            color: var(--ocean-white);
+            margin-bottom: 30px;
+            text-align: center;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 25%;
+            width: 50%;
+            height: 3px;
+            background: linear-gradient(to right, 
+                transparent, 
+                var(--accent-gold), 
+                transparent);
+        }
+
+        /* Upload Area */
+        .upload-area {
+            border: 3px dashed rgba(255, 255, 255, 0.4);
+            border-radius: 20px;
+            padding: 60px 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            background: rgba(255, 255, 255, 0.05);
+            margin-bottom: 25px;
+        }
+
+        .upload-area:hover {
+            border-color: var(--accent-gold);
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.01);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .upload-icon {
+            font-size: 5rem;
+            color: var(--accent-gold);
+            margin-bottom: 20px;
+            text-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .upload-text h3 {
+            font-size: 1.8rem;
+            color: var(--ocean-white);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .upload-text p {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+        }
+
+        .file-tags {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .file-tag {
+            background: linear-gradient(135deg, var(--ocean-teal), var(--ocean-blue));
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(0, 180, 219, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* File Info */
+        .file-info {
+            background: linear-gradient(135deg, rgba(0, 180, 219, 0.2), rgba(38, 208, 206, 0.3));
+            border: 2px solid var(--ocean-teal);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 25px;
+            display: none;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Modern Button */
+        .modern-btn {
+            background: linear-gradient(135deg, var(--ocean-blue), var(--ocean-teal));
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            border-radius: 15px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 30px;
+            letter-spacing: 1px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                0 10px 30px rgba(38, 208, 206, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .modern-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 15px 40px rgba(38, 208, 206, 0.6),
+                0 0 20px rgba(38, 208, 206, 0.4);
+            background: linear-gradient(135deg, var(--ocean-teal), var(--ocean-blue));
+        }
+
+        .modern-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Loading Section */
+        .loading-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 50px 40px;
+            text-align: center;
+            display: none;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .loader {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+            position: relative;
+        }
+
+        .loader::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 5px solid transparent;
+            border-top: 5px solid var(--accent-gold);
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Results Grid */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        /* Result Cards */
+        .result-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            transition: all 0.4s ease;
+        }
+
+        .result-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.3),
+                0 0 30px rgba(38, 208, 206, 0.3);
+            border-color: var(--accent-gold);
+        }
+
+        .card-header {
+            background: linear-gradient(to right, rgba(0, 180, 219, 0.3), rgba(38, 208, 206, 0.3));
+            padding: 20px;
+            text-align: center;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .card-header h3 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--ocean-white);
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .card-body {
+            padding: 25px;
+            min-height: 300px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 250px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid var(--ocean-light);
+            border-radius: 15px;
+            padding: 20px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--ocean-dark);
+            resize: vertical;
+            transition: all 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+        }
+
+        /* Quiz Items */
+        .quiz-item {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid var(--ocean-light);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .quiz-item:hover {
+            transform: translateX(5px);
+            border-color: var(--accent-gold);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .quiz-question {
+            font-weight: 600;
+            color: var(--ocean-dark);
+            margin-bottom: 10px;
+        }
+
+        .quiz-answer {
+            color: var(--ocean-teal);
+            padding-top: 10px;
+            border-top: 2px dashed var(--ocean-light);
+            display: none;
+            font-weight: 500;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin: 30px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, var(--ocean-blue), var(--accent-gold), var(--ocean-teal));
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 4px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-text h1 { font-size: 2.5rem; }
+            .section-title { font-size: 1.8rem; }
+            .upload-area { padding: 40px 20px; }
+            .results-grid { grid-template-columns: 1fr; }
+            .main-card { padding: 25px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="wave-bg"></div>
+    <div class="container">
+        <!-- Modern Header -->
+        <header class="ocean-header">
+            <div class="header-content">
+                <div class="ai-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <div class="header-text">
+                    <h1>LectureNotes AI</h1>
+                    <p class="tagline">Transform audio lectures into organized notes instantly</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Upload Section -->
+        <div class="main-card" id="uploadSection">
+            <h2 class="section-title">Upload Lecture Audio</h2>
+            
+            <div class="upload-area" id="dropZone">
+                <div class="upload-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <div class="upload-text">
+                    <h3>Drag & Drop Audio File</h3>
+                    <p>Upload MP3, WAV, M4A files up to 150MB</p>
+                    
+                    <div class="file-tags">
+                        <span class="file-tag">MP3</span>
+                        <span class="file-tag">WAV</span>
+                        <span class="file-tag">M4A</span>
+                        <span class="file-tag">FLAC</span>
+                        <span class="file-tag">MAX 150MB</span>
+                    </div>
+                </div>
+            </div>
+
+            <input type="file" id="fileInput" accept="audio/*" hidden>
+            
+            <div class="file-info" id="fileInfo">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div>
+                        <h4 id="fileName" style="color: white; margin-bottom: 5px;"></h4>
+                        <p id="fileSize" style="color: rgba(255,255,255,0.8); font-size: 0.9rem;"></p>
+                    </div>
+                    <button id="removeFile" style="background: var(--accent-coral); color: white; border: none; padding: 8px 20px; border-radius: 10px; cursor: pointer; font-weight: 500;">
+                        <i class="fas fa-times"></i> Remove
+                    </button>
+                </div>
+            </div>
+
+            <button class="modern-btn" id="processBtn" disabled>
+                <i class="fas fa-bolt"></i> GENERATE NOTES & QUIZ
+            </button>
+        </div>
+
+        <!-- Loading Section -->
+        <div class="loading-section" id="loadingSection">
+            <div class="loader"></div>
+            <h3 style="color: white; margin-bottom: 20px; font-size: 1.8rem; font-family: 'Montserrat', sans-serif;">
+                Processing Your Audio
+            </h3>
+            <p id="loadingText" style="color: rgba(255,255,255,0.9); margin-bottom: 30px; font-size: 1.1rem;">
+                Transcribing audio to text...
+            </p>
+            
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            
+            <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">
+                This may take a minute depending on file size
+            </p>
+        </div>
+
+        <!-- Results Section -->
+        <div class="main-card" id="resultsSection" style="display: none;">
+            <h2 class="section-title">Generated Notes & Quiz</h2>
+            
+            <div class="results-grid">
+                <!-- Transcript Card -->
+                <div class="result-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-file-alt"></i> Full Transcript</h3>
+                    </div>
+                    <div class="card-body">
+                        <textarea id="transcriptArea" readonly placeholder="Transcribed text will appear here..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Summary Card -->
+                <div class="result-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-line"></i> AI Summary</h3>
+                    </div>
+                    <div class="card-body">
+                        <textarea id="summaryArea" readonly placeholder="AI-generated summary will appear here..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Quiz Card -->
+                <div class="result-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-question-circle"></i> Quiz Questions</h3>
+                    </div>
+                    <div class="card-body" id="quizContainer">
+                        <!-- Quiz questions will be inserted here -->
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px;">
+                <button class="modern-btn" id="newUploadBtn" style="width: auto; padding: 15px 40px; background: linear-gradient(135deg, var(--accent-coral), #ff9966);">
+                    <i class="fas fa-upload"></i> UPLOAD ANOTHER LECTURE
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const removeFileBtn = document.getElementById('removeFile');
+        const processBtn = document.getElementById('processBtn');
+        const loadingSection = document.getElementById('loadingSection');
+        const resultsSection = document.getElementById('resultsSection');
+        const uploadSection = document.getElementById('uploadSection');
+        const loadingText = document.getElementById('loadingText');
+        const progressBar = document.getElementById('progressBar');
+        const newUploadBtn = document.getElementById('newUploadBtn');
+        
+        const transcriptArea = document.getElementById('transcriptArea');
+        const summaryArea = document.getElementById('summaryArea');
+        const quizContainer = document.getElementById('quizContainer');
+
+        let selectedFile = null;
+
+        // Event Listeners
+        dropZone.addEventListener('click', () => fileInput.click());
+        
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = 'var(--accent-gold)';
+            dropZone.style.transform = 'scale(1.02)';
+        });
+        
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+            dropZone.style.transform = 'scale(1)';
+        });
+        
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+            dropZone.style.transform = 'scale(1)';
+            if (e.dataTransfer.files.length > 0) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+        
+        removeFileBtn.addEventListener('click', () => {
+            selectedFile = null;
+            fileInput.value = '';
+            fileInfo.style.display = 'none';
+            processBtn.disabled = true;
+        });
+        
+        processBtn.addEventListener('click', processFile);
+        newUploadBtn.addEventListener('click', resetApp);
+
+        // File Handling
+        function handleFile(file) {
+            if (!file.type.startsWith('audio/')) {
+                showAlert('Please select an audio file (MP3, WAV, M4A)', 'error');
+                return;
+            }
+            
+            const fileSizeMB = file.size / (1024 * 1024);
+            if (fileSizeMB > 150) {
+                showAlert('Maximum file size is 150MB. Your file is ' + fileSizeMB.toFixed(1) + 'MB', 'error');
+                return;
+            }
+            
+            selectedFile = file;
+            fileName.textContent = file.name;
+            fileSize.textContent = fileSizeMB.toFixed(1) + ' MB';
+            fileInfo.style.display = 'block';
+            processBtn.disabled = false;
+        }
+
+        // Process File
+        async function processFile() {
+            if (!selectedFile) return;
+            
+            // Show loading section
+            uploadSection.style.display = 'none';
+            loadingSection.style.display = 'block';
+            
+            // Progress simulation
+            const steps = [
+                { progress: 20, text: 'Uploading audio file...' },
+                { progress: 40, text: 'Transcribing audio to text...' },
+                { progress: 60, text: 'Analyzing content...' },
+                { progress: 80, text: 'Generating summary...' },
+                { progress: 95, text: 'Creating quiz questions...' }
+            ];
+            
+            for (let i = 0; i < steps.length; i++) {
+                progressBar.style.width = steps[i].progress + '%';
+                loadingText.textContent = steps[i].text;
+                await sleep(800);
+            }
+            
+            // Send to backend
+            const formData = new FormData();
+            formData.append('audio', selectedFile);
+            
+            try {
+                const response = await fetch('/process', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.error) {
+                    showAlert('Error: ' + result.error, 'error');
+                    resetApp();
+                } else {
+                    // Display results
+                    transcriptArea.value = result.transcript;
+                    summaryArea.value = result.summary;
+                    
+                    // Display quiz
+                    if (result.quiz && result.quiz.length > 0) {
+                        quizContainer.innerHTML = '';
+                        result.quiz.forEach((q, index) => {
+                            const quizItem = document.createElement('div');
+                            quizItem.className = 'quiz-item';
+                            quizItem.innerHTML = `
+                                <div class="quiz-question">Q${index + 1}: ${q.question}</div>
+                                <div class="quiz-answer" style="display: none;">
+                                    <strong>Answer:</strong> ${q.answer}
+                                </div>
+                            `;
+                            quizItem.addEventListener('click', () => {
+                                const answer = quizItem.querySelector('.quiz-answer');
+                                answer.style.display = answer.style.display === 'none' ? 'block' : 'none';
+                            });
+                            quizContainer.appendChild(quizItem);
+                        });
+                    } else {
+                        quizContainer.innerHTML = '<p style="text-align: center; color: var(--ocean-light); padding: 20px;">No quiz questions generated.</p>';
+                    }
+                    
+                    // Show results
+                    progressBar.style.width = '100%';
+                    loadingText.textContent = 'Complete!';
+                    
+                    setTimeout(() => {
+                        loadingSection.style.display = 'none';
+                        resultsSection.style.display = 'block';
+                    }, 500);
+                }
+            } catch (error) {
+                showAlert('Error processing file: ' + error.message, 'error');
+                console.error(error);
+                resetApp();
+            }
+        }
+
+        // Reset App
+        function resetApp() {
+            selectedFile = null;
+            fileInput.value = '';
+            fileInfo.style.display = 'none';
+            processBtn.disabled = true;
+            loadingSection.style.display = 'none';
+            resultsSection.style.display = 'none';
+            uploadSection.style.display = 'block';
+            progressBar.style.width = '0%';
+            transcriptArea.value = '';
+            summaryArea.value = '';
+            quizContainer.innerHTML = '';
+        }
+
+        // Utility Functions
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function showAlert(message, type = 'info') {
+            const alert = document.createElement('div');
+            alert.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 25px;
+                border-radius: 10px;
+                color: white;
+                font-weight: 500;
+                z-index: 1000;
+                animation: slideInRight 0.3s ease;
+                max-width: 400px;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            `;
+            
+            if (type === 'error') {
+                alert.style.background = 'linear-gradient(135deg, var(--accent-coral), #ff5252)';
+            } else {
+                alert.style.background = 'linear-gradient(135deg, var(--ocean-blue), var(--ocean-teal))';
+            }
+            
+            alert.textContent = message;
+            document.body.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => alert.remove(), 300);
+            }, 3000);
+        }
+
+        // Add CSS for animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOutRight {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
