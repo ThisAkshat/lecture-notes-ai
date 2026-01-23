@@ -87,44 +87,192 @@ def summarize_text(text):
     
     return " ".join(final_summary) if final_summary else text[:300] + "..."
 
-def generate_quiz(text):
+def generate_quiz(text, min_questions=10, max_questions=15):
     sentences = re.split(r'(?<=[.!?])\s+', text)
     
-    lesson_keywords = ['lesson', 'teaches', 'means', 'therefore', 'because', 
-                      'important', 'key', 'main', 'conclusion']
+    if len(sentences) < min_questions:
+        # Agar kam sentences hai toh paragraph break karo
+        paragraphs = re.split(r'\n\s*\n', text)
+        sentences = []
+        for para in paragraphs:
+            para_sents = re.split(r'(?<=[.!?])\s+', para)
+            sentences.extend(para_sents)
     
-    quiz_sentences = []
-    for sent in sentences:
-        if any(kw in sent.lower() for kw in lesson_keywords):
-            if len(sent.split()) > 8:
-                quiz_sentences.append(sent)
+    # Better keyword matching
+    quiz_keywords = [
+        'is', 'are', 'was', 'were', 'has', 'have', 'had',
+        'means', 'defines', 'describes', 'explains', 'shows',
+        'important', 'key', 'main', 'primary', 'essential',
+        'because', 'therefore', 'thus', 'hence', 'consequently',
+        'however', 'although', 'while', 'whereas',
+        'example', 'instance', 'specifically',
+        'first', 'second', 'third', 'finally',
+        'lesson', 'teaches', 'learn', 'understand', 'concept',
+        'advantage', 'disadvantage', 'benefit', 'limitation',
+        'compare', 'contrast', 'difference', 'similarity'
+    ]
     
-    if len(quiz_sentences) < 3:
-        long_sents = [s for s in sentences if len(s.split()) > 12]
-        quiz_sentences.extend(long_sents[:5-len(quiz_sentences)])
-    
-    quiz = []
-    for i, sent in enumerate(quiz_sentences[:5]):
+    # Score each sentence for quiz potential
+    scored_sentences = []
+    for i, sent in enumerate(sentences):
+        score = 0
+        
+        # Length based scoring
         words = sent.split()
-        if len(words) > 6:
-            import random
-            pos = min(4, len(words)-1)
-            blank_word = words[pos]
+        word_count = len(words)
+        
+        if 8 <= word_count <= 25:  # Ideal length for questions
+            score += 5
+        elif word_count > 25:  # Too long, but might be informative
+            score += 2
+        else:  # Too short
+            score -= 3
+        
+        # Keyword matching
+        sent_lower = sent.lower()
+        for kw in quiz_keywords:
+            if kw in sent_lower:
+                score += 2
+        
+        # Position in text (introduction/conclusion are important)
+        if i < 3:  # First few sentences
+            score += 3
+        if i > len(sentences) - 4:  # Last few sentences
+            score += 2
+        
+        # Contains definitions or explanations
+        if ' means ' in sent_lower or ' is ' in sent_lower or ' are ' in sent_lower:
+            score += 3
+        
+        # Contains numbers or lists
+        if any(word.isdigit() for word in words):
+            score += 2
+        
+        scored_sentences.append((score, sent, words))
+    
+    # Sort by score and take top sentences
+    scored_sentences.sort(reverse=True, key=lambda x: x[0])
+    
+    # Select sentences for quiz (try to get min_questions)
+    selected_sentences = []
+    for score, sent, words in scored_sentences:
+        if len(words) >= 6:  # Minimum words for a meaningful blank
+            selected_sentences.append((sent, words))
+        if len(selected_sentences) >= max_questions:
+            break
+    
+    # If still not enough, add more sentences
+    if len(selected_sentences) < min_questions:
+        for score, sent, words in scored_sentences:
+            if (sent, words) not in selected_sentences and len(words) >= 5:
+                selected_sentences.append((sent, words))
+            if len(selected_sentences) >= min_questions:
+                break
+    
+    # Generate quiz questions
+    quiz = []
+    used_blanks = set()  # To avoid duplicate blanks
+    
+    for i, (sent, words) in enumerate(selected_sentences[:max_questions]):
+        if len(words) < 5:
+            continue
+        
+        import random
+        import string
+        
+        # Try to find a good word to blank (not too short, not too common)
+        candidate_positions = []
+        
+        for pos in range(len(words)):
+            word = words[pos]
+            clean_word = word.translate(str.maketrans('', '', string.punctuation))
             
-            import string
-            blank_word = blank_word.translate(str.maketrans('', '', string.punctuation))
+            # Skip if word is too short or common
+            if len(clean_word) < 4:
+                continue
             
-            if blank_word and len(blank_word) > 3:
-                question = sent.replace(words[pos], "______")
+            # Skip common words
+            common_words = {'the', 'and', 'but', 'for', 'are', 'was', 'were', 'this', 'that', 'with'}
+            if clean_word.lower() in common_words:
+                continue
+            
+            # Score this position
+            position_score = 0
+            
+            # Prefer nouns/verbs (simple heuristic)
+            if len(clean_word) > 5:  # Longer words often more meaningful
+                position_score += 2
+            
+            # Avoid first and last word
+            if pos > 0 and pos < len(words) - 1:
+                position_score += 1
+            
+            # Prefer words that appear important
+            if clean_word[0].isupper() and pos > 0:  # Proper nouns (not at start)
+                position_score += 3
+            
+            candidate_positions.append((position_score, pos, clean_word))
+        
+        if candidate_positions:
+            # Pick the best position
+            candidate_positions.sort(reverse=True, key=lambda x: x[0])
+            best_score, best_pos, best_word = candidate_positions[0]
+            
+            # Avoid using same blank word multiple times
+            if best_word.lower() not in used_blanks:
+                used_blanks.add(best_word.lower())
+                
+                # Create question with blank
+                question_parts = words.copy()
+                question_parts[best_pos] = "______"
+                question = " ".join(question_parts)
+                
                 quiz.append({
-                    "question": f"Q{i+1}: {question}",
-                    "answer": blank_word
+                    "question": question,
+                    "answer": best_word
                 })
     
-    return quiz
-
+    # If still not enough questions, create simpler ones
+    if len(quiz) < min_questions and len(sentences) > 0:
+        simple_count = min_questions - len(quiz)
+        for i in range(min(simple_count, len(sentences))):
+            sent = sentences[i]
+            words = sent.split()
+            
+            if len(words) >= 6:
+                # Simple approach: blank a middle word
+                pos = len(words) // 2
+                word = words[pos]
+                clean_word = word.translate(str.maketrans('', '', string.punctuation))
+                
+                if len(clean_word) >= 3:
+                    question_parts = words.copy()
+                    question_parts[pos] = "______"
+                    question = " ".join(question_parts)
+                    
+                    quiz.append({
+                        "question": question,
+                        "answer": clean_word
+                    })
+    
+    return quiz[:max_questions]  # Return at most max_questions
 # Test the functions
 if __name__ == "__main__":
-    test_text = "Machine learning is important for AI. It helps computers learn from data. Deep learning is a subset of machine learning."
+    test_text = """Machine learning is a branch of artificial intelligence that focuses on building systems that learn from data. 
+    There are three main types of machine learning: supervised learning, unsupervised learning, and reinforcement learning.
+    Supervised learning uses labeled data to train models for prediction or classification tasks.
+    Unsupervised learning finds patterns and structures in unlabeled data without specific guidance.
+    Reinforcement learning uses rewards and punishments to train agents through interaction with an environment.
+    Deep learning is a subset of machine learning that uses neural networks with multiple layers.
+    Neural networks are inspired by the structure and function of the human brain.
+    Training a model requires a large dataset and computational resources.
+    Overfitting occurs when a model learns the training data too well but fails to generalize to new data.
+    Regularization techniques help prevent overfitting in machine learning models."""
+    
     print("Test summary:", summarize_text(test_text))
-    print("Test quiz:", generate_quiz(test_text))
+    
+    quiz = generate_quiz(test_text, min_questions=10, max_questions=15)
+    print(f"\nGenerated {len(quiz)} quiz questions:")
+    for i, q in enumerate(quiz):
+        print(f"Q{i+1}: {q['question']}")
+        print(f"Answer: {q['answer']}\n")

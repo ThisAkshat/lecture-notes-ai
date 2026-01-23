@@ -341,7 +341,7 @@
             margin-top: 40px;
         }
 
-        /* Result Cards */
+        /* Result Cards - FIXED UNIFORM HEIGHT */
         .result-card {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(20px);
@@ -350,6 +350,9 @@
             border: 2px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
             transition: all 0.4s ease;
+            height: 550px; /* Fixed uniform height */
+            display: flex;
+            flex-direction: column;
         }
 
         .result-card:hover {
@@ -365,6 +368,7 @@
             padding: 20px;
             text-align: center;
             border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            flex-shrink: 0; /* Prevent shrinking */
         }
 
         .card-header h3 {
@@ -377,12 +381,18 @@
 
         .card-body {
             padding: 25px;
-            min-height: 300px;
+            flex: 1; /* Take remaining space */
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Prevent overflow */
         }
 
+        /* Textareas for Transcript and Summary */
         textarea {
             width: 100%;
-            min-height: 250px;
+            height: 100%; /* Fill available space */
+            min-height: 350px;
+            max-height: 350px;
             background: rgba(255, 255, 255, 0.9);
             border: 2px solid var(--ocean-light);
             border-radius: 15px;
@@ -393,6 +403,7 @@
             color: var(--ocean-dark);
             resize: vertical;
             transition: all 0.3s ease;
+            flex: 1;
         }
 
         textarea:focus {
@@ -401,16 +412,45 @@
             box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
         }
 
+        /* Quiz Container */
+        #quizContainer {
+            overflow-y: auto; /* Make scrollable */
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding-right: 5px; /* Space for scrollbar */
+        }
+
+        /* Custom Scrollbar for Quiz Container */
+        #quizContainer::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #quizContainer::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        #quizContainer::-webkit-scrollbar-thumb {
+            background: var(--ocean-blue);
+            border-radius: 4px;
+        }
+
+        #quizContainer::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-gold);
+        }
+
         /* Quiz Items */
         .quiz-item {
             background: rgba(255, 255, 255, 0.9);
             border: 2px solid var(--ocean-light);
             border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 15px;
+            padding: 15px;
+            margin-bottom: 12px;
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0; /* Don't shrink */
         }
 
         .quiz-item:hover {
@@ -422,15 +462,50 @@
         .quiz-question {
             font-weight: 600;
             color: var(--ocean-dark);
-            margin-bottom: 10px;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            line-height: 1.4;
         }
 
         .quiz-answer {
             color: var(--ocean-teal);
-            padding-top: 10px;
+            padding-top: 8px;
             border-top: 2px dashed var(--ocean-light);
             display: none;
             font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        /* Show More/Less Button */
+        .quiz-controls {
+            text-align: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px dashed rgba(255, 255, 255, 0.3);
+            flex-shrink: 0;
+        }
+
+        .show-more-btn {
+            background: linear-gradient(135deg, var(--ocean-blue), var(--ocean-teal));
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 0 auto;
+        }
+
+        .show-more-btn:hover {
+            background: linear-gradient(135deg, var(--ocean-teal), var(--ocean-blue));
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 180, 219, 0.3);
         }
 
         /* Progress Bar */
@@ -457,6 +532,8 @@
             .upload-area { padding: 40px 20px; }
             .results-grid { grid-template-columns: 1fr; }
             .main-card { padding: 25px; }
+            .result-card { height: 500px; }
+            textarea { min-height: 300px; max-height: 300px; }
         }
     </style>
 </head>
@@ -566,8 +643,10 @@
                     <div class="card-header">
                         <h3><i class="fas fa-question-circle"></i> Quiz Questions</h3>
                     </div>
-                    <div class="card-body" id="quizContainer">
-                        <!-- Quiz questions will be inserted here -->
+                    <div class="card-body">
+                        <div id="quizContainer">
+                            <!-- Quiz questions will be inserted here -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -708,24 +787,9 @@
                     transcriptArea.value = result.transcript;
                     summaryArea.value = result.summary;
                     
-                    // Display quiz
+                    // Display quiz with Show More/Less functionality
                     if (result.quiz && result.quiz.length > 0) {
-                        quizContainer.innerHTML = '';
-                        result.quiz.forEach((q, index) => {
-                            const quizItem = document.createElement('div');
-                            quizItem.className = 'quiz-item';
-                            quizItem.innerHTML = `
-                                <div class="quiz-question">Q${index + 1}: ${q.question}</div>
-                                <div class="quiz-answer" style="display: none;">
-                                    <strong>Answer:</strong> ${q.answer}
-                                </div>
-                            `;
-                            quizItem.addEventListener('click', () => {
-                                const answer = quizItem.querySelector('.quiz-answer');
-                                answer.style.display = answer.style.display === 'none' ? 'block' : 'none';
-                            });
-                            quizContainer.appendChild(quizItem);
-                        });
+                        displayQuizWithControls(result.quiz);
                     } else {
                         quizContainer.innerHTML = '<p style="text-align: center; color: var(--ocean-light); padding: 20px;">No quiz questions generated.</p>';
                     }
@@ -743,6 +807,84 @@
                 showAlert('Error processing file: ' + error.message, 'error');
                 console.error(error);
                 resetApp();
+            }
+        }
+
+        // Display Quiz with Show More/Less Controls
+        function displayQuizWithControls(quizQuestions) {
+            quizContainer.innerHTML = '';
+            const questionsToShow = 5; // Show first 5 questions initially
+            
+            // Create all quiz items
+            quizQuestions.forEach((q, index) => {
+                const quizItem = document.createElement('div');
+                quizItem.className = 'quiz-item';
+                
+                // Remove any existing "Q1: " prefix if present
+                let questionText = q.question;
+                if (questionText.startsWith(`Q${index + 1}: `)) {
+                    questionText = questionText.replace(`Q${index + 1}: `, '');
+                }
+                
+                quizItem.innerHTML = `
+                    <div class="quiz-question">Q${index + 1}: ${questionText}</div>
+                    <div class="quiz-answer" style="display: none;">
+                        <strong>Answer:</strong> ${q.answer}
+                    </div>
+                `;
+                
+                quizItem.addEventListener('click', () => {
+                    const answer = quizItem.querySelector('.quiz-answer');
+                    answer.style.display = answer.style.display === 'none' ? 'block' : 'none';
+                });
+                
+                quizContainer.appendChild(quizItem);
+                
+                // Hide questions beyond first 5 initially
+                if (index >= questionsToShow) {
+                    quizItem.style.display = 'none';
+                }
+            });
+            
+            // Add Show More/Less button if more than 5 questions
+            if (quizQuestions.length > questionsToShow) {
+                const controlsDiv = document.createElement('div');
+                controlsDiv.className = 'quiz-controls';
+                controlsDiv.innerHTML = `
+                    <button class="show-more-btn" id="showMoreBtn">
+                        <i class="fas fa-chevron-down"></i> 
+                        Show More Questions (${quizQuestions.length - questionsToShow} more)
+                    </button>
+                `;
+                quizContainer.appendChild(controlsDiv);
+                
+                let showingAll = false;
+                const showMoreBtn = document.getElementById('showMoreBtn');
+                const allQuizItems = document.querySelectorAll('.quiz-item');
+                
+                showMoreBtn.addEventListener('click', () => {
+                    showingAll = !showingAll;
+                    
+                    if (showingAll) {
+                        // Show all questions
+                        allQuizItems.forEach(item => item.style.display = 'block');
+                        showMoreBtn.innerHTML = `
+                            <i class="fas fa-chevron-up"></i> Show Less
+                        `;
+                    } else {
+                        // Show only first 5
+                        allQuizItems.forEach((item, index) => {
+                            item.style.display = index < questionsToShow ? 'block' : 'none';
+                        });
+                        showMoreBtn.innerHTML = `
+                            <i class="fas fa-chevron-down"></i> 
+                            Show More Questions (${quizQuestions.length - questionsToShow} more)
+                        `;
+                    }
+                    
+                    // Smooth scroll to keep button in view
+                    controlsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                });
             }
         }
 

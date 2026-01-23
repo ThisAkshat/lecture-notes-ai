@@ -19,6 +19,6 @@ print("Summary:", summary)
 print("\nTesting quiz generation...")
 quiz = generate_quiz(lecture_text)
 for q in quiz:
-    print(q["question"])
+    print("Question:", q["question"])
     print("Answer:", q["answer"])
     print()
