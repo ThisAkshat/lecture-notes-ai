@@ -1,4 +1,4 @@
-# **LectureNotes AI: Voice-to-Notes Generator**  
+# 1. **LectureNotes AI: Voice-to-Notes Generator**  
 
 **An AI-powered tool that converts audio lectures into structured notes, summaries, and quizzes in seconds**  
 
@@ -97,3 +97,9 @@ The goal is to help students capture **every important concept** without the str
    python app.py
    ```  
 4. **Open browser to:** `http://localhost:10000`  
+
+### 8. **Screenshots:**
+![first Page](LA2.png)
+
+
+![Second Page](LA1.png)
