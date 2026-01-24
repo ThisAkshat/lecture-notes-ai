@@ -98,7 +98,7 @@ The goal is to help students capture **every important concept** without the str
    ```  
 4. **Open browser to:** `http://localhost:10000`  
 
-### 8. **Screenshots:**
+## 8. **Screenshots:**
 ![first Page](LA2.png)
 
 
