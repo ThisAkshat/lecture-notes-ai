@@ -103,3 +103,5 @@ The goal is to help students capture **every important concept** without the str
 
 
 ![Second Page](LA1.png)
+
+
