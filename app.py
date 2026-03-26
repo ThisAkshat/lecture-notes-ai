@@ -4,6 +4,7 @@ import os
 from transcribe import audio_to_text
 from summarize import summarize_text, generate_quiz
 
+
 app = Flask(__name__)
 
 app.config['MAX_CONTENT_LENGTH'] = 150 * 1024 * 1024  # 150 MB
